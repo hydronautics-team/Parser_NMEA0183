@@ -39,7 +39,7 @@ enum Title
     GPGLL = 24,
     GNGLL = 25,
     GAGSV = 26,
-    UNKNOWN
+    UNKNOWN = 27
 };
 
 struct GLL
@@ -55,6 +55,15 @@ struct GLL
     QTime time;
     char status = 0;
     char posMode = 0;
+};
+
+struct stPSAT
+{
+    QTime time;        // Время UTC
+    double yaw;        // Курс (рысканье)
+    double pitch;      // Килевая качка
+    double roll;       // Бортовая качка
+    QString dataType;  // Тип данных (N - курс от GPS, G - гиро курс)
 };
 
 struct RMS
@@ -74,21 +83,22 @@ struct RMS
     int counter = 0;
 };
 
-struct GGA {
-    QTime time;          // Время GPS (UTC)
-    double lat;          // Широта
-    QString NS;          // Север/Юг
-    double lon;          // Долгота
-    QString EW;          // Восток/Запад
-    int quality;         // Качество сигнала (0 = нет фиксации, 1 = GPS фиксация, 2 = DGPS фиксация)
-    int satellites;      // Количество используемых спутников
-    double hdop;         // Горизонтальная точность (HDOP)
-    double altitude;     // Высота над уровнем моря
-    QString altitudeUnit;// Единица измерения высоты
-    double geoidSeparation; // Высота над геоидом
-    QString geoidUnit;   // Единица измерения высоты над геоидом
-    double dgpsAge;      // Возраст данных DGPS
-    QString dgpsStation; // Идентификатор станции DGPS
+struct GGA
+{
+    QTime time;           // UTC Время обсервации
+    double latitude;      // Широта
+    QString latHemisphere;// Полушарие (N/S)
+    double longitude;     // Долгота
+    QString lonHemisphere;// Полушарие (E/W)
+    int quality;          // Индикатор качества обсервации
+    int satellitesUsed;   // Количество спутников
+    double hdop;          // Величина горизонтального геометрического фактора (HDOP)
+    double altitude;      // Высота антенны над уровнем моря (геоидом)
+    QString altitudeUnit; // Единица измерения высоты (м)
+    double geoidHeight;   // Превышение геоида над эллипсоидом WGS84
+    QString geoidUnit;    // Единица измерения превышения геоида (м)
+    double dgpsAge = 0;       // Возраст дифференциальной поправки
+    int dgpsStationId = 0;    // Идентификатор ККС
 };
 
 struct RMC {
@@ -173,6 +183,7 @@ struct GPS
     stHDT hdt;
     stROT rot;
     TXT txt;
+    stPSAT psat;
 };
 
 #pragma pack(pop)
@@ -218,7 +229,7 @@ protected:
 
     int crc (QByteArray msg);
     int crc_real_method(QByteArray gps_buffer, uint crc_in);
-    bool test_message = true;
+    bool test_message = false;
     QTimer timer;
 signals:
     void newMessageDetected(GPS gps);
