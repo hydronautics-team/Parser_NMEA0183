@@ -4,6 +4,6 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    NMEA0183 tranzas("COM11");
+    NMEA::NMEA0183 tranzas("COM10");
     return a.exec();
 }

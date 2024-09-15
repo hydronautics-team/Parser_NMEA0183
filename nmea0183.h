@@ -11,7 +11,11 @@
 
 #pragma pack(push,1)
 
-enum Title
+namespace NMEA {
+
+
+
+enum TitleNMEA
 {
     GNGGA = 1,  ///<  GNSS fix data
     GPGGA = 2,      ///<  GPS fix data
@@ -197,7 +201,7 @@ public:
     GPS gps;
 protected:
     QFile fileGPS;
-    void findTitle(qint8 index, qint8 crc_in, uint end, QByteArray title); //поиск заголовка
+    void findTitleNMEA(qint8 index, qint8 crc_in, uint end, QByteArray title); //поиск заголовка
     QSerialPort gps_port;
     QByteArray gps_buffer;
     void parseBuffer();
@@ -229,11 +233,13 @@ protected:
 
     int crc (QByteArray msg);
     int crc_real_method(QByteArray gps_buffer, uint crc_in);
-    bool test_message = false;
+    bool test_message = true;
     QTimer timer;
 signals:
     void newMessageDetected(GPS gps);
 
 };
+
+} //end namespace NMEA
 
 #endif // NMEA0183_H

@@ -4,6 +4,8 @@
 /// GPGGA - коордиинаты
 /// PSAT - углы ориентации
 
+namespace NMEA {
+
 NMEA0183::NMEA0183(QString portName, int baudRate, QObject *parent)
 {
     gps_port.setBaudRate(baudRate);
@@ -46,7 +48,7 @@ void NMEA0183::readData()
     emit newMessageDetected(gps);
 }
 
-Title stringToTitle(const QByteArray tit)
+TitleNMEA stringToTitle(const QByteArray tit)
 {
     if (tit == "GPRMC") return GPRMC;
     if (tit == "GPVTG") return GPVTG;
@@ -113,7 +115,7 @@ void NMEA0183::parseBuffer()
         {
             QByteArray title = gps_buffer.mid (index+1, 5);
             if(test_message) qDebug() << "findTitle";
-            findTitle(index, crc_in, end, title);
+            findTitleNMEA(index, crc_in, end, title);
         }
         gps_buffer.remove(0, end);
 
@@ -121,9 +123,9 @@ void NMEA0183::parseBuffer()
     }
 }
 
-void NMEA0183::findTitle(qint8 index, qint8 crc_in, uint end, QByteArray title)
+void NMEA0183::findTitleNMEA(qint8 index, qint8 crc_in, uint end, QByteArray title)
 {
-    Title titleEnum = stringToTitle(title);
+    TitleNMEA titleEnum = stringToTitle(title);
     if (titleEnum == 27)
     {
         QByteArray title4 = title.mid(0,4);
@@ -873,3 +875,5 @@ void NMEA0183::parseGPGLL(QByteArray msg)
         if(test_message)qDebug() << "gps.gll.status:    " << gps.gll.status;
         if(test_message)qDebug() << "gps.gll.posMode:   " << gps.gll.posMode;
 }
+
+} //end namespace NMEA
